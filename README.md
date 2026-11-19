@@ -16,7 +16,7 @@ TaskFlow is a Django-based project and task management application. It provides 
 
 ## Tech stack
 
-- Python 3.13 (compatible with supported Django versions)
+- Python 3.13
 - Django 5.2
 - SQLite for local development
 - HTML and CSS
@@ -26,7 +26,7 @@ TaskFlow is a Django-based project and task management application. It provides 
 ### 1. Clone the repository
 
 ```bash
-git clone <your-repository-url>
+git clone https://github.com/immsepehr/TaskFlow.git
 cd TaskFlow
 ```
 
@@ -54,18 +54,25 @@ python -m pip install -r requirements.txt
 
 ### 4. Configure environment variables
 
-The project reads configuration from environment variables. It does not automatically load `.env` files.
+TaskFlow reads configuration from environment variables and does not automatically load a `.env` file. Set a unique local development secret before running Django.
 
-For local development on Windows PowerShell, set the variables before starting Django:
+Windows PowerShell:
 
 ```powershell
-$env:DJANGO_SECRET_KEY = "your-local-development-secret-key"
+$env:DJANGO_SECRET_KEY = "replace-with-a-long-random-local-secret"
 $env:DJANGO_DEBUG = "True"
-$env:DJANGO_ALLOWED_HOSTS = "localhost,127.0.0.1"
+$env:DJANGO_ALLOWED_HOSTS = "localhost,127.0.0.1,[::1]"
 ```
 
-For production, configure these variables through your hosting platform's environment settings. Never commit real secrets to the repository.
+macOS/Linux:
 
+```bash
+export DJANGO_SECRET_KEY="replace-with-a-long-random-local-secret"
+export DJANGO_DEBUG="True"
+export DJANGO_ALLOWED_HOSTS="localhost,127.0.0.1,[::1]"
+```
+
+For production, set a strong, unique `DJANGO_SECRET_KEY`, set `DJANGO_DEBUG=False`, and configure `DJANGO_ALLOWED_HOSTS` and `DJANGO_CSRF_TRUSTED_ORIGINS` through your hosting platform. Never commit real secrets to the repository.
 
 ### 5. Apply migrations and run the development server
 
@@ -89,11 +96,10 @@ Before deployment:
 1. Set a strong, unique `DJANGO_SECRET_KEY`.
 2. Set `DJANGO_DEBUG=False`.
 3. Set `DJANGO_ALLOWED_HOSTS` to the deployed hostname(s), comma-separated.
-4. Set `DJANGO_CSRF_TRUSTED_ORIGINS` to the full HTTPS origin(s), comma-separated.
+4. Set `DJANGO_CSRF_TRUSTED_ORIGINS` to the full HTTPS origin(s), comma-separated (for example, `https://example.com`).
 5. Configure a persistent production database. SQLite is intended for local development in this project.
 6. Run `python manage.py check --deploy` and resolve all deployment warnings.
 7. Run `python manage.py collectstatic --noinput` and configure the hosting platform to serve `staticfiles/`.
-
 
 ## Project structure
 
@@ -106,3 +112,7 @@ TaskFlow/
 |-- requirements.txt
 `-- README.md
 ```
+
+## Project status
+
+TaskFlow is an educational portfolio project. Core project and task management workflows, authentication, user-level data access restrictions, and automated tests are implemented. Production deployment and additional features are ongoing.
