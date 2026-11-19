@@ -1,0 +1,264 @@
+
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>TaskFlow | Tasks</title>
+
+    <link rel="stylesheet" href="{% static 'tasks/css/dashboard.css' %}">
+</head>
+
+<body>
+
+<div class="app-container">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+
+        <div class="brand">
+            <div class="brand-icon">T</div>
+            <span>TaskFlow</span>
+        </div>
+
+        <div class="nav-section">
+            <p class="nav-label">WORKSPACE</p>
+
+            <a href="{% url 'dashboard' %}" class="nav-link">
+                <span>▦</span> Dashboard
+            </a>
+
+            <a href="{% url 'project_list' %}" class="nav-link">
+                <span>▣</span> Projects
+            </a>
+
+            <a href="{% url 'task_list' %}" class="nav-link active">
+                <span>✓</span> Tasks
+            </a>
+        </div>
+
+        <div class="sidebar-bottom">
+            <div class="profile">
+                <div class="avatar">{{ request.user.username|first|upper }}</div>
+                <div>
+                    <strong>{{ request.user.username }}</strong>
+                    <small>Workspace member</small>
+                </div>
+            </div>
+            <form method="post" action="{% url 'logout' %}" class="sidebar-logout-form">
+                {% csrf_token %}
+                <button type="submit" class="sidebar-logout-button">Log out</button>
+            </form>
+        </div>
+
+    </aside>
+
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+        <header class="topbar">
+            <div>
+                <h1>Tasks</h1>
+                <p>Manage and track all your tasks across projects.</p>
+            </div>
+        </header>
+
+
+        <!-- Task Statistics -->
+        <section class="stats-grid">
+
+            <div class="stat-card">
+                <div class="stat-icon purple">✓</div>
+                <p>Total Tasks</p>
+                <h2>{{ total_tasks }}</h2>
+                <span>Tasks across your projects</span>
+            </div>
+
+        </section>
+
+
+        <!-- Tasks List -->
+        <section class="content-card">
+
+            <div class="section-header">
+                <div>
+                    <h2>All Tasks</h2>
+                    <p>Your tasks and their current status</p>
+                </div>
+            </div>
+
+
+<!-- Search and Filter -->
+<form method="GET" class="task-filter-form">
+
+    <div class="filter-group">
+        <input
+            type="text"
+            name="q"
+            placeholder="Search tasks by title..."
+            value="{{ search_query }}"
+            class="form-input"
+        >
+    </div>
+
+    <div class="filter-group">
+        <select name="status" class="form-input">
+            <option value="">All Statuses</option>
+
+            <option value="todo"
+                {% if status_filter == "todo" %}selected{% endif %}>
+                To Do
+            </option>
+
+            <option value="in_progress"
+                {% if status_filter == "in_progress" %}selected{% endif %}>
+                In Progress
+            </option>
+
+            <option value="done"
+                {% if status_filter == "done" %}selected{% endif %}>
+                Done
+            </option>
+        </select>
+    </div>
+
+    <button type="submit" class="primary-button">
+        Search
+    </button>
+
+    <a href="{% url 'task_list' %}" class="secondary-button">
+        Clear
+    </a>
+
+</form>
+
+
+
+{% if tasks %}
+
+<div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th>Task</th>
+                <th>Project</th>
+                <th>Status</th>
+                <th>Priority</th>
+                <th>Due Date</th>
+                <th>Assigned To</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for task in tasks %}
+                <tr>
+                    <td>
+                        <strong>{{ task.title }}</strong>
+                    </td>
+
+                    <td>{{ task.project.name }}</td>
+
+                    <td>{{ task.get_status_display }}</td>
+
+                    <td>{{ task.get_priority_display }}</td>
+
+                    <td>
+                        {% if task.due_date %}
+                            {{ task.due_date|date:"M d, Y" }}
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if task.assigned_to %}
+                            {{ task.assigned_to.username }}
+                        {% else %}
+                            Unassigned
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        <a href="{% url 'task_update' task.pk %}"
+                           class="secondary-button">
+                            Edit
+                        </a>
+
+                        <a href="{% url 'task_delete' task.pk %}"
+                           class="delete-button">
+                            Delete
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if page_obj.has_other_pages %}
+    <nav class="pagination" aria-label="Task pagination">
+        {% if page_obj.has_previous %}
+            <a href="?q={{ search_query|urlencode }}&amp;status={{ status_filter|urlencode }}&amp;page={{ page_obj.previous_page_number }}"
+               class="secondary-button">Previous</a>
+        {% else %}
+            <span class="secondary-button is-disabled" aria-disabled="true">Previous</span>
+        {% endif %}
+
+        <span class="pagination-info">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?q={{ search_query|urlencode }}&amp;status={{ status_filter|urlencode }}&amp;page={{ page_obj.next_page_number }}"
+               class="secondary-button">Next</a>
+        {% else %}
+            <span class="secondary-button is-disabled" aria-disabled="true">Next</span>
+        {% endif %}
+    </nav>
+{% endif %}
+
+{% elif search_query or status_filter %}
+
+<div class="empty-state">
+    <div class="empty-icon">⌕</div>
+
+    <h3>No matching tasks found</h3>
+
+    <p>Try changing your search or filter criteria.</p>
+
+    <a href="{% url 'task_list' %}" class="secondary-button">
+        Clear Filters
+    </a>
+</div>
+
+{% else %}
+
+<div class="empty-state">
+    <div class="empty-icon">✓</div>
+
+    <h3>No tasks yet</h3>
+
+    <p>Create tasks inside your projects to see them here.</p>
+</div>
+
+{% endif %}
+
+
+        </section>
+
+
+        <footer class="footer">
+            TaskFlow © 2026 · Built with Django
+        </footer>
+
+    </main>
+
+</div>
+
+</body>
+</html>

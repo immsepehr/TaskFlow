@@ -1,0 +1,146 @@
+
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>TaskFlow | Create Project</title>
+
+    <link rel="stylesheet" href="{% static 'tasks/css/dashboard.css' %}">
+</head>
+
+<body>
+
+<div class="app-container">
+
+    <aside class="sidebar">
+
+        <div class="brand">
+            <div class="brand-icon">T</div>
+            <span>TaskFlow</span>
+        </div>
+
+        <div class="nav-section">
+            <p class="nav-label">WORKSPACE</p>
+
+            <a href="{% url 'dashboard' %}" class="nav-link">
+                <span>▦</span> Dashboard
+            </a>
+
+            <a href="{% url 'project_list' %}" class="nav-link active">
+                <span>▣</span> Projects
+            </a>
+
+            <a href="{% url 'task_list' %}" class="nav-link">
+                <span>✓</span> Tasks
+            </a>
+        </div>
+
+        <div class="sidebar-bottom">
+            <div class="profile">
+                <div class="avatar">{{ request.user.username|first|upper }}</div>
+                <div>
+                    <strong>{{ request.user.username }}</strong>
+                    <small>Workspace member</small>
+                </div>
+            </div>
+            <form method="post" action="{% url 'logout' %}" class="sidebar-logout-form">
+                {% csrf_token %}
+                <button type="submit" class="sidebar-logout-button">Log out</button>
+            </form>
+        </div>
+
+    </aside>
+
+
+    <main class="main-content">
+
+        <header class="topbar">
+            <div>
+                <h1>Create Project</h1>
+                <p>Add a new project to your workspace.</p>
+            </div>
+
+            <a href="{% url 'project_list' %}" class="secondary-button">
+                ← Back to Projects
+            </a>
+        </header>
+
+
+        <section class="content-card project-form-card">
+
+            <div class="section-header">
+                <div>
+                    <h2>Project Information</h2>
+                    <p>Enter the details of your new project.</p>
+                </div>
+            </div>
+
+
+            <form method="POST" class="project-form">
+
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="form-errors">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+
+                <div class="form-group">
+                    <label for="{{ form.name.id_for_label }}">
+                        Project Name
+                    </label>
+
+                    {{ form.name }}
+
+                    {% for error in form.name.errors %}
+                        <small class="field-error">{{ error }}</small>
+                    {% endfor %}
+                </div>
+
+
+                <div class="form-group">
+                    <label for="{{ form.description.id_for_label }}">
+                        Description
+                    </label>
+
+                    {{ form.description }}
+
+                    {% for error in form.description.errors %}
+                        <small class="field-error">{{ error }}</small>
+                    {% endfor %}
+                </div>
+
+
+                <div class="form-actions">
+
+                    <a href="{% url 'project_list' %}" class="secondary-button">
+                        Cancel
+                    </a>
+
+                    <button type="submit" class="primary-button">
+                        Create Project
+                    </button>
+
+                </div>
+
+            </form>
+
+        </section>
+
+
+        <footer class="footer">
+            TaskFlow © 2026 · Built with Django
+        </footer>
+
+    </main>
+
+</div>
+
+</body>
+</html>

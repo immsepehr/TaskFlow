@@ -1,0 +1,51 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Create your TaskFlow account and organize your projects and tasks.">
+    <title>TaskFlow | Create Account</title>
+    <link rel="stylesheet" href="{% static 'tasks/css/dashboard.css' %}">
+</head>
+<body>
+<div class="app-container">
+    <main class="main-content">
+        <section class="content-card project-form-card">
+            <div class="section-header">
+                <div>
+                    <h1>Create Your Account</h1>
+                    <p>Join TaskFlow and start managing your projects.</p>
+                </div>
+            </div>
+
+            <form method="post" class="project-form">
+                {% csrf_token %}
+                {% if form.non_field_errors %}
+                    <div class="error-message">{{ form.non_field_errors }}</div>
+                {% endif %}
+
+                {% for field in form %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.help_text %}
+                            <small>{{ field.help_text|safe }}</small>
+                        {% endif %}
+                        {% for error in field.errors %}
+                            <p class="error-message">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+
+                <div class="form-actions">
+                    <button type="submit" class="primary-button">Create Account</button>
+                </div>
+            </form>
+
+            <p>Already have an account? <a href="{% url 'login' %}">Log in</a></p>
+        </section>
+    </main>
+</div>
+</body>
+</html>

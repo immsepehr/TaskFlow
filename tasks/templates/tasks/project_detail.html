@@ -1,0 +1,137 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskFlow | {{ project.name }}</title>
+    <link rel="stylesheet" href="{% static 'tasks/css/dashboard.css' %}">
+</head>
+<body>
+<div class="app-container">
+
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-icon">T</div>
+            <span>TaskFlow</span>
+        </div>
+
+        <div class="nav-section">
+            <p class="nav-label">WORKSPACE</p>
+            <a href="{% url 'dashboard' %}" class="nav-link">
+                <span>▦</span> Dashboard
+            </a>
+            <a href="{% url 'project_list' %}" class="nav-link active">
+                <span>▣</span> Projects
+            </a>
+        </div>
+
+        <div class="sidebar-bottom">
+            <div class="profile">
+                <div class="avatar">{{ request.user.username|first|upper }}</div>
+                <div>
+                    <strong>{{ request.user.username }}</strong>
+                    <small>Workspace member</small>
+                </div>
+            </div>
+            <form method="post" action="{% url 'logout' %}" class="sidebar-logout-form">
+                {% csrf_token %}
+                <button type="submit" class="sidebar-logout-button">Log out</button>
+            </form>
+        </div>
+    </aside>
+
+    <main class="main-content">
+
+        <header class="topbar">
+            <div>
+                <p>
+                    <a href="{% url 'project_list' %}">Projects</a>
+                    / Project Details
+                </p>
+                <h1>{{ project.name }}</h1>
+                <p>{{ project.description|default:"No description provided." }}</p>
+            </div>
+
+            <a href="{% url 'project_update' project.pk %}"
+               class="primary-button">
+                Edit Project
+            </a>
+        </header>
+
+        <section class="stats-grid">
+
+            <div class="stat-card">
+                <div class="stat-icon purple">▣</div>
+                <p>Total Tasks</p>
+                <h2>{{ project.total_tasks }}</h2>
+                <span>Tasks in this project</span>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon green">✓</div>
+                <p>Completed Tasks</p>
+                <h2>{{ project.completed_tasks }}</h2>
+                <span>Successfully completed</span>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon blue">◷</div>
+                <p>Remaining Tasks</p>
+                <h2>{{ remaining_tasks }}</h2>
+                <span>Tasks not completed</span>
+            </div>
+
+        </section>
+
+        <section class="content-card">
+
+            <div class="section-header">
+                <div>
+                    <h2>Project Tasks</h2>
+                    <p>All tasks associated with this project</p>
+                </div>
+            </div>
+
+            {% if tasks %}
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Task</th>
+                                <th>Status</th>
+                                <th>Priority</th>
+                                <th>Due Date</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for task in tasks %}
+                                <tr>
+                                    <td>{{ task.title }}</td>
+                                    <td>{{ task.get_status_display }}</td>
+                                    <td>{{ task.get_priority_display }}</td>
+                                    <td>{{ task.due_date|default:"—" }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">✓</div>
+                    <h3>No tasks yet</h3>
+                    <p>Tasks created for this project will appear here.</p>
+                </div>
+            {% endif %}
+
+        </section>
+
+        <footer class="footer">
+            TaskFlow © 2026 · Built with Django
+        </footer>
+
+    </main>
+</div>
+</body>
+</html>

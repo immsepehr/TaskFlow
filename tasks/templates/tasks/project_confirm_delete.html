@@ -1,0 +1,45 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskFlow | Delete Project</title>
+    <link rel="stylesheet" href="{% static 'tasks/css/dashboard.css' %}">
+</head>
+<body>
+    <div class="app-container">
+        <main class="main-content">
+            <section class="content-card project-form-card">
+                <div class="section-header">
+                    <div>
+                        <h2>Delete Project</h2>
+                        <p>Confirm your action before continuing.</p>
+                    </div>
+                </div>
+
+                <div class="project-form">
+                    <p>
+                        Are you sure you want to delete
+                        <strong>{{ project.name }}</strong>?
+                    </p>
+
+                    <p>This action cannot be undone. All associated tasks will also be deleted.</p>
+
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="form-actions">
+                            <a href="{% url 'project_list' %}" class="secondary-button">
+                                Cancel
+                            </a>
+                            <button type="submit" class="primary-button">
+                                Delete Project
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

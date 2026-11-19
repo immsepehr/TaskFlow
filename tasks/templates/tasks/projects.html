@@ -1,0 +1,199 @@
+
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>TaskFlow | Projects</title>
+
+    <link rel="stylesheet" href="{% static 'tasks/css/dashboard.css' %}">
+</head>
+
+<body>
+
+<div class="app-container">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+
+        <div class="brand">
+            <div class="brand-icon">T</div>
+            <span>TaskFlow</span>
+        </div>
+
+        <div class="nav-section">
+            <p class="nav-label">WORKSPACE</p>
+
+            <a href="{% url 'dashboard' %}" class="nav-link">
+                <span>▦</span> Dashboard
+            </a>
+
+            <a href="{% url 'project_list' %}" class="nav-link active">
+                <span>▣</span> Projects
+            </a>
+
+            <a href="{% url 'task_list' %}" class="nav-link">
+            <span>✓</span> Tasks
+            </a>
+        </div>
+
+        <div class="sidebar-bottom">
+            <div class="profile">
+                <div class="avatar">{{ request.user.username|first|upper }}</div>
+                <div>
+                    <strong>{{ request.user.username }}</strong>
+                    <small>Workspace member</small>
+                </div>
+            </div>
+            <form method="post" action="{% url 'logout' %}" class="sidebar-logout-form">
+                {% csrf_token %}
+                <button type="submit" class="sidebar-logout-button">Log out</button>
+            </form>
+        </div>
+
+    </aside>
+
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+        <header class="topbar">
+            <div>
+                <h1>Projects</h1>
+                <p>Manage and track all your workspace projects.</p>
+            </div>
+        </header>
+
+
+        <!-- Project Statistics -->
+        <section class="stats-grid">
+
+            <div class="stat-card">
+                <div class="stat-icon purple">▣</div>
+                <p>Total Projects</p>
+                <h2>{{ total_projects }}</h2>
+                <span>Your workspace projects</span>
+            </div>
+
+        </section>
+
+
+        <!-- Projects List -->
+        <section class="content-card">
+
+            <div class="section-header">
+                <div>
+                    <h2>All Projects</h2>
+                    <p>Your projects and their current progress</p>
+                </div>
+
+                <a href="{% url 'project_create' %}" class="primary-button">
+                    + New Project
+                </a>
+            </div>
+
+            {% if projects %}
+
+                <div class="projects-grid">
+
+                    {% for project in projects %}
+
+                        <article class="project-card">
+
+                            <div class="project-card-header">
+                                <div class="project-icon">▣</div>
+
+                                <span class="project-date">
+                                    {{ project.created_at|date:"M d, Y" }}
+                                </span>
+                            </div>
+
+                            <h3>
+                                <a href="{% url 'project_detail' project.pk %}">
+                                    {{ project.name }}
+                                </a>
+                            </h3>
+
+                            <p class="project-description">
+                                {% if project.description %}
+                                    {{ project.description|truncatechars:120 }}
+                                {% else %}
+                                    No description provided.
+                                {% endif %}
+                            </p>
+
+                            <div class="project-stats">
+                                <span>
+                                    Tasks
+                                    <strong>{{ project.total_tasks }}</strong>
+                                </span>
+
+                                <span>
+                                    Completed
+                                    <strong>{{ project.completed_tasks }}</strong>
+                                </span>
+                            </div>
+
+                            <div class="project-progress-header">
+                                <span>Progress</span>
+
+                                <strong>
+                                    {% if project.total_tasks %}
+                                        {% widthratio project.completed_tasks project.total_tasks 100 %}%
+                                    {% else %}
+                                        0%
+                                    {% endif %}
+                                </strong>
+                            </div>
+
+                            <div class="progress-track">
+                                <div class="progress-fill completed-fill"
+                                     style="width: {% if project.total_tasks %}{% widthratio project.completed_tasks project.total_tasks 100 %}{% else %}0{% endif %}%;">
+                                </div>
+                            </div>
+                            <div class="project-card-actions">
+                                <a href="{% url 'project_update' project.pk %}"
+                                   class="secondary-button">
+                                    Edit Project
+                                </a>
+
+                                <a href="{% url 'project_delete' project.pk %}"
+                                   class="secondary-button">
+                                    Delete Project
+                                </a>
+                            </div>
+
+                        </article>
+
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+
+                <div class="empty-state">
+                    <div class="empty-icon">▣</div>
+
+                    <h3>No projects yet</h3>
+
+                    <p>Create your first project to get started.</p>
+                </div>
+
+            {% endif %}
+
+        </section>
+
+
+        <footer class="footer">
+            TaskFlow © 2026 · Built with Django
+        </footer>
+
+    </main>
+
+</div>
+
+</body>
+</html>

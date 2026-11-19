@@ -1,0 +1,64 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskFlow | Login</title>
+    <link rel="stylesheet" href="{% static 'tasks/css/dashboard.css' %}">
+</head>
+<body>
+
+<div class="app-container">
+    <main class="main-content">
+        <section class="content-card project-form-card">
+
+            <div class="section-header">
+                <div>
+                    <h1>Welcome Back</h1>
+                    <p>Log in to continue managing your projects.</p>
+                </div>
+            </div>
+
+            <form method="POST" class="project-form">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="error-message">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                {% for field in form %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}">
+                            {{ field.label }}
+                        </label>
+
+                        {{ field }}
+
+                        {% for error in field.errors %}
+                            <p class="error-message">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+
+                <div class="form-actions">
+                    <button type="submit" class="primary-button">
+                        Log In
+                    </button>
+                </div>
+            </form>
+
+            <p>
+                Don't have an account?
+                <a href="{% url 'register' %}">Create Account</a>
+            </p>
+
+        </section>
+    </main>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,100 @@
+
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskFlow | Delete Task</title>
+    <link rel="stylesheet" href="{% static 'tasks/css/dashboard.css' %}">
+</head>
+<body>
+
+<div class="app-container">
+
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-icon">T</div>
+            <span>TaskFlow</span>
+        </div>
+
+        <div class="nav-section">
+            <p class="nav-label">WORKSPACE</p>
+
+            <a href="{% url 'dashboard' %}" class="nav-link">
+                <span>▦</span> Dashboard
+            </a>
+
+            <a href="{% url 'project_list' %}" class="nav-link">
+                <span>▣</span> Projects
+            </a>
+
+            <a href="{% url 'task_list' %}" class="nav-link active">
+                <span>✓</span> Tasks
+            </a>
+        </div>
+
+        <div class="sidebar-bottom">
+            <div class="profile">
+                <div class="avatar">{{ request.user.username|first|upper }}</div>
+                <div>
+                    <strong>{{ request.user.username }}</strong>
+                    <small>Workspace member</small>
+                </div>
+            </div>
+            <form method="post" action="{% url 'logout' %}" class="sidebar-logout-form">
+                {% csrf_token %}
+                <button type="submit" class="sidebar-logout-button">Log out</button>
+            </form>
+        </div>
+    </aside>
+
+    <main class="main-content">
+
+        <header class="topbar">
+            <div>
+                <h1>Delete Task</h1>
+                <p>Confirm that you want to delete this task.</p>
+            </div>
+        </header>
+
+        <section class="content-card project-form-card">
+
+            <div class="section-header">
+                <div>
+                    <h2>Are you sure?</h2>
+                    <p>This action cannot be undone.</p>
+                </div>
+            </div>
+
+            <p>
+                You are about to delete:
+                <strong>{{ task.title }}</strong>
+            </p>
+
+            <form method="POST" class="project-form">
+                {% csrf_token %}
+
+                <div class="form-actions">
+                    <a href="{% url 'task_list' %}" class="secondary-button">
+                        Cancel
+                    </a>
+
+                    <button type="submit" class="primary-button">
+                        Delete Task
+                    </button>
+                </div>
+            </form>
+
+        </section>
+
+        <footer class="footer">
+            TaskFlow © 2026 · Built with Django
+        </footer>
+
+    </main>
+</div>
+
+</body>
+</html>
